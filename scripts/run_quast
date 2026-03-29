@@ -1,0 +1,10 @@
+#!/bin/bash
+#SBATCH -p eck-q
+#SBATCH --cpus-per-task=2
+#SBATCH -J QUAST
+
+~/.local/bin/quast.py \
+    /home/alumno13/TareaADO/results/contigs.fasta \
+    -o /home/alumno13/TareaADO/results/quast_spades \
+    --min-contig 500 \
+    -t 2

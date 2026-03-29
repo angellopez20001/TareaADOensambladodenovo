@@ -1,0 +1,31 @@
+```bash
+#!/bin/bash
+#SBATCH --job-name=velvet
+#SBATCH --output=velvet_%j.out
+#SBATCH --error=velvet_%j.err
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=4
+
+# Ruta a Velvet (ajusta si hace falta)
+VELVET_DIR=./velvet-version_1.2.10
+
+# Archivo de entrada
+READS=ERR15113764.fastq
+
+# Directorio de salida
+OUTDIR=velvet_output
+
+# Tamaño de k-mer (puedes cambiarlo, típico: 21-31 para Illumina)
+KMER=31
+
+echo "Iniciando Velvet..."
+
+# Paso 1: velveth
+$VELVET_DIR/velveth $OUTDIR $KMER -short -fastq $READS
+
+# Paso 2: velvetg
+$VELVET_DIR/velvetg $OUTDIR
+
+echo "Velvet terminado"
+```
+

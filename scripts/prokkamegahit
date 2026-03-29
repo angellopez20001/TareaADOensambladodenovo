@@ -1,0 +1,13 @@
+#!/bin/bash
+#SBATCH -p eck-q
+#SBATCH --cpus-per-task=2
+#SBATCH -J PROKKA_MEGAHIT
+
+module load prokka
+
+prokka /home/alumno13/TareaADO/Megahitout/final.contigs.fa \
+    --outdir /home/alumno13/TareaADO/Megahitout/prokka_megahit \
+    --prefix ERR15113764_megahit \
+    --metagenome \
+    --cpus 2 \
+    --force
