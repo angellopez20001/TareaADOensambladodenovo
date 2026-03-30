@@ -34,15 +34,25 @@ Los archivos de referencia (genoma *E. coli* K-12 MG1655) y los ficheros FASTQ
 no se incluyen por su tamaño y deben prepararse según las instrucciones de abajo.
 
 ## Mínimos para ejecución
+Las siguientes herramientas están **disponibles como módulos en el servidor ECK** y no requieren instalación adicional:
 
-- Nextflow >= 22.10
-- Java >= 17
-- SPAdes >= 3.15.0
-- MEGAHIT >= 1.2.9 (instalación manual, ver instrucciones abajo)
-- QUAST >= 5.2.0
-- Prokka >= 1.14.6
-- ABRicate >= 1.0.1
-- Acceso al servidor ECK con cuenta en la cola SLURM (eck-q)
+| Herramienta | Versión | Carga en cluster |
+|---|---|---|
+| SPAdes | 3.15.0 | `module load spades/3.15.0` |
+| Prokka | 1.14.6 | `module load prokka` |
+| FastQC | 0.12.1 | disponible en el sistema |
+
+Las siguientes herramientas requieren **instalación manual** (ver instrucciones abajo):
+
+| Herramienta | Versión | Método |
+|---|---|---|
+| Nextflow | >= 22.10 | `curl` (ver instrucciones) |
+| Java | >= 17 | `wget` (ver instrucciones) |
+| MEGAHIT | 1.2.9 | `wget` binario precompilado |
+| QUAST | 5.2.0 | `pip3 install quast --user` |
+| ABRicate | 1.0.1 | `wget` binario precompilado (ver instrucciones abajo) |
+
+Además se requiere acceso al servidor ECK con cuenta en la cola SLURM (eck-q).
 
 ## Instalación de Nextflow en el cluster ECK
 
@@ -77,7 +87,44 @@ mkdir -p ~/bin && mv nextflow ~/bin/
 # 7. Verificar Nextflow
 nextflow -version
 ```
+## Instalación de ABRicate en el cluster
 
+ABRicate no está disponible como módulo en el servidor ECK, por lo que debe
+instalarse manualmente descargando el binario precompilado directamente con wget,
+sin necesidad de permisos de administrador ni compilación.
+
+```bash
+# 1. Descargar ABRicate v1.0.1 desde GitHub
+cd ~
+wget https://github.com/tseemann/abricate/archive/refs/tags/v1.0.1.tar.gz
+
+# 2. Descomprimir el archivo descargado
+tar -xzf v1.0.1.tar.gz
+
+# 3. Mover el binario a un directorio en el PATH
+mkdir -p ~/bin
+cp abricate-1.0.1/bin/abricate ~/bin/
+
+# 4. Añadir ~/bin al PATH de forma permanente (si no está ya)
+echo 'export PATH=$HOME/bin:$PATH' >> ~/.bashrc
+source ~/.bashrc
+
+# 5. Instalar dependencias de ABRicate (módulos Perl necesarios)
+cpanm --local-lib=~/perl5 Bio::SearchIO
+
+# 6. Configurar las bases de datos
+abricate --setupdb
+
+# 7. Verificar la instalación y bases de datos disponibles
+abricate --version
+# Debe mostrar: abricate 1.0.1
+
+abricate --list
+# Debe mostrar las bases de datos: card, vfdb, resfinder, ncbi, etc.
+
+# 8. Limpiar archivos temporales (opcional)
+rm -rf v1.0.1.tar.gz abricate-1.0.1/
+```
 ## Instalación de MEGAHIT en el cluster 
 
 MEGAHIT no está disponible como módulo en el servidor ECK, por lo tanto debe
